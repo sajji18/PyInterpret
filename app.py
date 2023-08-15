@@ -1,6 +1,10 @@
-# An Interpreter which can handle single digit plus minus operation. Ex -> 3+4, 4+5
-# Token types
-INTEGER, PLUS, MINUS, EOF = 'INTEGER', 'PLUS', 'MINUS', 'EOF'
+# An Interpreter with rules:
+f'''Only single digit integers are allowed in the input
+The only arithmetic operation supported at the moment is addition, subtraction
+No whitespace characters are allowed anywhere in the input'''
+
+# Token types, A token is an object that has a type and a value
+INTEGER, WHITESPACE, PLUS, MINUS, EOF = 'INTEGER', 'WHITESPACE', 'PLUS', 'MINUS', 'EOF'
 
 class Token:
     # constructor
@@ -64,12 +68,17 @@ class Interpreter:
             return token
 
         if current_char == '+':
-            token = Token(PLUS, current_char)
+            token = Token(PLUS, str(current_char))
             self.advance()
             return token
         
         if current_char == '-':
-            token = Token(MINUS, current_char)
+            token = Token(MINUS, str(current_char))
+            self.advance()
+            return token
+        
+        if current_char == ' ':
+            token = Token(WHITESPACE, str(current_char))
             self.advance()
             return token
 
@@ -83,10 +92,41 @@ class Interpreter:
         else:
             self.error()
 
-    def operation(self):
+    def arithmetic_operation(self):
         # initially current token is none, so get hold of first char and token
         self.current_token = self.get_next_token()
         
+        # numbers = []
+        # plus_operator = True
+        # number_string = ''
+        
+        # # input -> '33 + 45'
+        # for char in self.text:
+        #     self.current_token = self.get_next_token()
+            
+        #     if self.current_token.type == 'WHITESPACE':
+        #         continue
+            
+        #     if self.current_token.type == 'INTEGER':
+        #         number_string += str(self.current_token.value)
+            
+        #     if(self.current_token.type != 'INTEGER'):
+        #         numbers.append(int(number_string))
+        #         number_string = ''
+        #         if(self.current_token.type == 'MINUS'):
+        #             plus_operator = False
+                
+        #     self.eat(self.current_token.type)
+        
+        # # Append the last number after the loop
+        # numbers.append(int(number_string))
+            
+        # if plus_operator == False:
+        #     return numbers[0] - numbers[1]
+        # else:
+        #     return numbers[0] + numbers[1]
+
+
         # Expecting the first(leftmost) char to be an integer
         left = self.current_token
         self.eat(left.type)
@@ -101,11 +141,14 @@ class Interpreter:
         
         if op.type == 'PLUS':
             result = left.value + right.value
+            return result
             
         elif op.type == 'MINUS':
             result = left.value - right.value
+            return result
+        
+        self.error()
             
-        return result
     
 def main():
     while True:
@@ -118,7 +161,7 @@ def main():
         if not text:
             continue
         interpreter = Interpreter(text)
-        result = interpreter.operation()
+        result = interpreter.arithmetic_operation()
         print(result)
 
 
