@@ -1,7 +1,6 @@
 # An Interpreter with rules:
-f'''Only single digit integers are allowed in the input
-The only arithmetic operation supported at the moment is addition, subtraction
-No whitespace characters are allowed anywhere in the input'''
+f'''The only arithmetic operation supported at the moment is addition, subtraction
+whitespace characters are allowed anywhere in the input. Ex -> 23  +     434-12 is valid input.'''
 
 # Token types, A token is an object that has a type and a value
 INTEGER, WHITESPACE, PLUS, MINUS, EOF = 'INTEGER', 'WHITESPACE', 'PLUS', 'MINUS', 'EOF'
@@ -38,60 +37,56 @@ class Interpreter:
         raise Exception('Error parsing input')
      
     def advance(self):
-        # move pos by 1 and assign current char
-        self.position += 1
+        self.position += 1 # move pos by 1 and assign current char
         
-        # text input ended, character is none
-        if self.position > len(self.text) - 1:
+        if self.position > len(self.text) - 1: # text input ended, character is none
             self.current_char = None
-        # track the character otherwise
-        else:
+            
+        else: # track the character otherwise
             self.current_char = self.text[self.position]
             
     def skip_white_spaces(self):
         if self.position < len(self.text):
-            if self.current_char == None:
+            if self.current_char.isspace():
                 self.advance()
     
     # Break a sentence into token, one at a time
     def get_next_token(self):
-        # If No more input left to convert into token
-        if self.position > len(self.text) - 1:
+        if self.position > len(self.text) - 1: # If No more input left to convert into token
             return Token(EOF, None)
         
         current_char = self.text[self.position]
         
-        # if current char is recognized, then store token and advance pos by 1
-        if current_char.isdigit():
+        if current_char.isdigit(): # if current char is recognized, then store token and advance pos by 1
             token = Token(INTEGER, int(current_char))
             self.advance()
             return token
 
-        if current_char == '+':
+        elif current_char == '+':
             token = Token(PLUS, current_char)
             self.advance()
             return token
         
-        if current_char == '-':
+        elif current_char == '-':
             token = Token(MINUS, current_char)
             self.advance()
             return token
         
-        if current_char == ' ':
+        elif current_char == ' ':
             token = Token(WHITESPACE, current_char)
             self.advance()
             return token
-
-        self.error()
+        else:
+            self.error()
         
     def eat(self, token_type):
-        # check if current token type == passed token type, get next token
-        if self.current_token.type == token_type:
+        if self.current_token.type == token_type: # check if current token type == passed token type, get next token
             self.current_token = self.get_next_token() 
             
         else:
             self.error()
     
+    # Handles Addition and Subtraction
     def operation(self):
         str_buffer, result, is_add_operator = '', 0, True  # Initialize is_add_operator to True
         
@@ -139,8 +134,6 @@ class Interpreter:
 def main():
     while True:
         try:
-            # To run under Python3 replace 'raw_input' call
-            # with 'input'
             text = input('calc> ')
         except EOFError:
             break
